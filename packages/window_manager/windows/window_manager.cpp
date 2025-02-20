@@ -589,7 +589,7 @@ void WindowManager::SetFullScreen(const flutter::EncodableMap& args) {
   g_is_window_fullscreen = isFullScreen;
 
   if (isFullScreen) {  // Set to fullscreen
-    ::SendMessage(mainWindow, WM_SYSCOMMAND, SC_MAXIMIZE, 0);
+    // ::SendMessage(mainWindow, WM_SYSCOMMAND, SC_MAXIMIZE, 0);
     if (!is_frameless_) {
       auto monitor = MONITORINFO{};
       auto placement = WINDOWPLACEMENT{};
@@ -599,7 +599,7 @@ void WindowManager::SetFullScreen(const flutter::EncodableMap& args) {
       ::GetMonitorInfo(
           ::MonitorFromWindow(mainWindow, MONITOR_DEFAULTTONEAREST), &monitor);
       ::SetWindowLongPtr(mainWindow, GWL_STYLE,
-                         g_style_before_fullscreen & ~WS_OVERLAPPEDWINDOW);
+                         g_style_before_fullscreen & ~(WS_THICKFRAME | WS_MAXIMIZEBOX));
       ::SetWindowPos(mainWindow, HWND_TOP, monitor.rcMonitor.left,
                      monitor.rcMonitor.top,
                      monitor.rcMonitor.right - monitor.rcMonitor.left,
@@ -607,10 +607,10 @@ void WindowManager::SetFullScreen(const flutter::EncodableMap& args) {
                      SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
     }
   } else {  // Restore from fullscreen
-    if (!g_maximized_before_fullscreen)
-      Restore();
+    // if (!g_maximized_before_fullscreen)
+    //   Restore();
     ::SetWindowLongPtr(mainWindow, GWL_STYLE,
-                       g_style_before_fullscreen | WS_OVERLAPPEDWINDOW);
+                       g_style_before_fullscreen | (WS_THICKFRAME | WS_MAXIMIZEBOX));
     if (::IsZoomed(mainWindow)) {
       // Refresh the parent mainWindow.
       ::SetWindowPos(mainWindow, nullptr, 0, 0, 0, 0,
